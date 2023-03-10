@@ -157,7 +157,7 @@ spec:
     - websecure
   routes:
   - kind: Rule
-    match: Host(`portainer.127.0.0.1.nip.io`)
+    match: Host(`portainer.${domain}`)
     services:
     - name: portainer
       port: 9000

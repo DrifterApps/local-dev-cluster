@@ -10,6 +10,32 @@ locals {
   host_lb_port = (var.k3d_host_lb_port != "" ? var.k3d_host_lb_port : random_integer.port.result)
 }
 
+module "certificates" {
+  source     = "./certificates"
+  domain     = var.domain
+}
+
+locals {
+  traefik_config_content = templatefile("${path.module}/templates/traefik-config.yamltpl", {
+    certificate = module.certificates.cert_content
+    key = module.certificates.key_content
+    domain = var.domain
+  })
+  portainer_deployment_content = templatefile("${path.module}/templates/portainer.deployment.yamltpl", {
+    domain = var.domain
+  })
+}
+
+resource "local_file" "traefik-config" {
+  filename = "${path.module}/manifests/traefik-config.yaml"
+  content  = local.traefik_config_content
+}
+
+resource "local_file" "portainer-deployment" {
+  filename = "${path.module}/manifests/portainer.deployment.yaml"
+  content  = local.portainer_deployment_content
+}
+
 resource "k3d_cluster" "clusters" {
   for_each = toset(var.k3d_cluster_name)
   
@@ -20,13 +46,13 @@ resource "k3d_cluster" "clusters" {
   image = "rancher/k3s:${var.k3s_version}"
 
   kube_api {
-    host      = "${each.key}-cluster.127.0.0.1.nip.io"
+    host      = "${each.key}-cluster.${var.domain}"
     host_ip   = var.k3d_cluster_ip
     host_port = var.k3d_cluster_port
   }
 
   volume {
-    source      = "${path.cwd}/manifests/traefik-config.yaml"
+    source = "${path.cwd}/manifests/traefik-config.yaml"
     destination = "/var/lib/rancher/k3s/server/manifests/traefik-config.yaml"
     node_filters = [
       "server:0",

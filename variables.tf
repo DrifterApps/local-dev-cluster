@@ -53,3 +53,8 @@ variable "kubeconfig_path" {
   default = "~/.kube/config"
   type    = string
 }
+
+variable "domain" {
+  default = "lvh.me"
+  type    = string
+}

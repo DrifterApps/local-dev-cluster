@@ -8,3 +8,4 @@ k3d_host_mysql_port        = 13306
 server_count               = 1     # Increase to >=3 for HA cluster
 agent_count                = 0
 k3s_version                = "v1.26.0-k3s1"
+domain                     = "lvh.me"
