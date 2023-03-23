@@ -20,6 +20,8 @@ locals {
     certificate = module.certificates.cert_content
     key = module.certificates.key_content
     domain = var.domain
+    cluster_mysql_port = var.k3d_cluster_mysql_port
+    cluster_debugger_port = var.k3d_cluster_debugger_port
   })
   portainer_deployment_content = templatefile("${path.module}/templates/portainer.deployment.yamltpl", {
     domain = var.domain
@@ -85,6 +87,14 @@ resource "k3d_cluster" "clusters" {
     ]
   }
 
+  port {
+    host_port      = var.k3d_host_debugger_port
+    container_port = var.k3d_cluster_debugger_port
+    node_filters = [
+      "loadbalancer",
+    ]
+  }
+
   kubeconfig {
     update_default_kubeconfig = true
     switch_current_context    = true
@@ -105,7 +115,7 @@ resource "null_resource" "patch_traefik" {
   provisioner "local-exec" {
     command = <<EOT
       kubectl config set-cluster ${each.key}
-      kubectl patch svc traefik -n kube-system -p '{"spec": {"ports": [{"name": "mysql", "port": 3306, "targetPort": 3306, "protocol": "TCP"}]}}'
+      kubectl patch svc traefik -n kube-system -p '{"spec": {"ports": [{"name": "mysql", "port": ${var.k3d_cluster_mysql_port}, "targetPort": ${var.k3d_cluster_mysql_port}, "protocol": "TCP"}, {"name": "debugger", "port": ${var.k3d_cluster_debugger_port}, "targetPort": ${var.k3d_cluster_debugger_port}, "protocol": "TCP"}]}}'
     EOT
   }
 }

@@ -3,8 +3,5 @@
 .terraform*
 terraform.tfvars
 .secrets/
-certs/
-certificates/.certs/lvh.me+4-key.pem
-certificates/.certs/lvh.me+4.pem
-manifests/portainer.deployment.yaml
-manifests/traefik-config.yaml
+.certs/
+manifests/

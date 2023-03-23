@@ -5,7 +5,9 @@ k3d_cluster_lb_port        = 443
 k3d_host_lb_port           = 443
 k3d_cluster_mysql_port     = 3306
 k3d_host_mysql_port        = 13306
+k3d_cluster_debugger_port  = 22
+k3d_host_debugger_port     = 2022
 server_count               = 1     # Increase to >=3 for HA cluster
 agent_count                = 0
 k3s_version                = "v1.26.0-k3s1"
-domain                     = "lvh.me"
+domain                     = "localtest.me"

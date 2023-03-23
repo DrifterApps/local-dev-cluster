@@ -39,6 +39,16 @@ variable "k3d_cluster_mysql_port" {
   type    = number
 }
 
+variable "k3d_host_debugger_port" {
+  default = null
+  type    = number
+}
+
+variable "k3d_cluster_debugger_port" {
+  default = 80
+  type    = number
+}
+
 variable "server_count" {
   default = 1
   type    = number
@@ -55,6 +65,6 @@ variable "kubeconfig_path" {
 }
 
 variable "domain" {
-  default = "lvh.me"
+  default = "localtest.me"
   type    = string
 }
